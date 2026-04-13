@@ -1,0 +1,162 @@
+/* VenueFlow AI - Global Styles */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #0f1117;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #1a1d27;
+  border-bottom: 2px solid #2d6cdf;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4f9dff;
+  letter-spacing: 1px;
+}
+
+.role-switch { display: flex; gap: 8px; }
+
+.role-btn {
+  padding: 8px 20px;
+  border: 2px solid #2d6cdf;
+  background: transparent;
+  color: #4f9dff;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.role-btn.active, .role-btn:hover {
+  background: #2d6cdf;
+  color: #fff;
+}
+
+.view { display: none; padding: 20px 24px; }
+.view.active { display: block; }
+
+.event-selector { margin-bottom: 24px; }
+
+.event-selector h2, .cards-section h2 {
+  font-size: 1.1rem;
+  color: #8ab4f8;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mode-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+
+.mode-btn {
+  padding: 8px 18px;
+  border: 2px solid #444;
+  background: #1e2130;
+  color: #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.mode-btn.active, .mode-btn:hover {
+  border-color: #4f9dff;
+  color: #4f9dff;
+  background: #162040;
+}
+
+.mode-desc {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 6px;
+}
+
+.cards-section { margin-bottom: 28px; }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.info-card {
+  background: #1e2130;
+  border: 1px solid #2d6cdf;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.card {
+  background: #1e2130;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+
+.card:hover { border-color: #4f9dff; }
+
+.card-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.badge-green { background: #1a3d2e; color: #4caf80; }
+.badge-yellow { background: #3d3400; color: #ffc107; }
+.badge-red { background: #3d1a1a; color: #ef5350; }
+.badge-blue { background: #162040; color: #4f9dff; }
+
+.reason-text {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.action-btn {
+  margin-top: 10px;
+  padding: 6px 14px;
+  background: #2d6cdf;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: background 0.2s;
+}
+
+.action-btn:hover { background: #1a4baa; }
+.action-btn.handled { background: #333; color: #666; cursor: default; }
+
+@media (max-width: 600px) {
+  .app-header { flex-direction: column; gap: 10px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .view { padding: 14px 12px; }
+}
