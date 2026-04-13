@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VenueFlow AI</title>
+  <link rel="stylesheet" href="src/components/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Role Switch -->
+    <header class="app-header">
+      <div class="logo">VenueFlow AI</div>
+      <div class="role-switch">
+        <button id="btnAttendee" class="role-btn active" onclick="switchRole('attendee')">Attendee</button>
+        <button id="btnOps" class="role-btn" onclick="switchRole('ops')">Operations</button>
+      </div>
+    </header>
+
+    <!-- Attendee Interface -->
+    <main id="attendeeView" class="view active">
+      <section class="event-selector">
+        <h2>Select Event Mode</h2>
+        <div class="mode-buttons">
+          <button class="mode-btn active" onclick="selectMode('sports')">Sports</button>
+          <button class="mode-btn" onclick="selectMode('concert')">Concert</button>
+          <button class="mode-btn" onclick="selectMode('expo')">Expo</button>
+        </div>
+        <p id="modeDesc" class="mode-desc">Stadium sports event with multiple entry gates and high crowd density.</p>
+      </section>
+
+      <section class="cards-section">
+        <h2>Best Gate Recommendation</h2>
+        <div id="gateCard" class="info-card"></div>
+      </section>
+
+      <section class="cards-section">
+        <h2>Nearby Facilities</h2>
+        <div id="facilitiesCards" class="card-grid"></div>
+      </section>
+
+      <section class="cards-section">
+        <h2>Live Alerts &amp; Route Guidance</h2>
+        <div id="alertCards" class="card-grid"></div>
+      </section>
+    </main>
+
+    <!-- Operations Interface -->
+    <main id="opsView" class="view">
+      <section class="cards-section">
+        <h2>Venue Overview Dashboard</h2>
+        <div id="overviewCards" class="card-grid"></div>
+      </section>
+
+      <section class="cards-section">
+        <h2>Zone Congestion Map</h2>
+        <div id="zoneCards" class="card-grid"></div>
+      </section>
+
+      <section class="cards-section">
+        <h2>Queue Status Board</h2>
+        <div id="queueCards" class="card-grid"></div>
+      </section>
+
+      <section class="cards-section">
+        <h2>Alerts &amp; Action Panel</h2>
+        <div id="opsAlertCards" class="card-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="src/data/eventData.js"></script>
+  <script src="src/data/gateData.js"></script>
+  <script src="src/data/zoneData.js"></script>
+  <script src="src/data/facilityData.js"></script>
+  <script src="src/data/alertData.js"></script>
+  <script src="src/logic/recommendationLogic.js"></script>
+  <script src="src/services/venueService.js"></script>
+  <script src="src/utils/helpers.js"></script>
+  <script src="src/screens/attendeeScreen.js"></script>
+  <script src="src/screens/opsScreen.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>
