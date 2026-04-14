@@ -2,7 +2,7 @@
 
 let currentRole = 'attendee';
 
-function switchRole(role) {
+async function switchRole(role) {
   currentRole = role;
 
   // Toggle views
@@ -14,15 +14,22 @@ function switchRole(role) {
   document.getElementById('btnOps').classList.toggle('active', role === 'ops');
 
   // Render the correct screen
-  if (role === 'attendee') renderAttendeeScreen();
-  if (role === 'ops') renderOpsScreen();
+  if (role === 'attendee') await renderAttendeeScreen();
+  if (role === 'ops') await renderOpsScreen();
 }
 
 // Initialise app on DOM ready
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   // Render attendee screen by default
-  renderAttendeeScreen();
+  await renderAttendeeScreen();
 
   console.log('%cVenueFlow AI loaded', 'color:#4f9dff;font-size:14px;font-weight:bold');
   console.log('Role: Attendee | Zone:', ATTENDEE_CONTEXT.currentZone);
+
+  // Register PWA Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.error('Service Worker registration failed', err));
+  }
 });

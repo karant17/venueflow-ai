@@ -1,7 +1,41 @@
 // src/screens/opsScreen.js - Operations Console UI rendering
 
-function renderOpsScreen() {
-  const data = window.venueService.getData();
+window.changeOpsMode = async function(mode) {
+  window.currentOpsMode = mode;
+  await renderOpsScreen();
+};
+
+async function renderOpsScreen() {
+  const data = await window.venueService.getData();
+  
+  if (!window.currentOpsMode) window.currentOpsMode = 'sports';
+
+  // Mode Switcher
+  let opsModeSelector = document.getElementById('opsModeSelector');
+  if (!opsModeSelector) {
+    const overviewSection = document.getElementById('overviewCards').parentNode;
+    if (overviewSection) {
+      opsModeSelector = document.createElement('div');
+      opsModeSelector.id = 'opsModeSelector';
+      overviewSection.insertBefore(opsModeSelector, document.getElementById('overviewCards'));
+    }
+  }
+
+  if (opsModeSelector) {
+    const modes = ['sports', 'concert', 'expo'];
+    opsModeSelector.innerHTML = `
+      <div style="margin-bottom: 8px; font-size: 0.9rem; color: #8ab4f8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: bold;">Threshold Mode</div>
+      <div class="mode-buttons" style="margin-bottom: 16px;">
+        ${modes.map(m => `
+          <button class="mode-btn ${window.currentOpsMode === m ? 'active' : ''}" 
+                  onclick="window.changeOpsMode('${m}')"
+                  style="text-transform: capitalize;">
+            ${m}
+          </button>
+        `).join('')}
+      </div>
+    `;
+  }
 
   // Overview Dashboard
   const overviewEl = document.getElementById('overviewCards');
@@ -45,9 +79,20 @@ function renderOpsScreen() {
   // Queue Status Board
   const queueEl = document.getElementById('queueCards');
   if (queueEl) {
+    // Determine thresholds based on mode
+    let redThreshold = 15;
+    let yellowThreshold = 7;
+    if (window.currentOpsMode === 'sports') {
+      redThreshold = 20; // Sports events tolerate higher wait times before alerting
+      yellowThreshold = 10;
+    } else if (window.currentOpsMode === 'expo') {
+      redThreshold = 10; // Expos need faster throughput
+      yellowThreshold = 5;
+    }
+
     const sorted = [...data.gates].sort((a,b) => b.queueTime - a.queueTime);
     queueEl.innerHTML = sorted.map((g, i) => {
-      const badgeClass = g.queueTime > 15 ? 'badge-red' : g.queueTime > 7 ? 'badge-yellow' : 'badge-green';
+      const badgeClass = g.queueTime >= redThreshold ? 'badge-red' : g.queueTime >= yellowThreshold ? 'badge-yellow' : 'badge-green';
       const topBadge = i < 3 && g.queueTime > 0 ? '<span class="badge badge-red" style="margin-right:4px">TOP CONGESTED</span>' : '';
       return `
         <div class="card">
@@ -85,8 +130,8 @@ function renderOpsScreen() {
   }
 }
 
-function handleAlert(alertId) {
-  const data = window.venueService.getData();
+async function handleAlert(alertId) {
+  const data = await window.venueService.getData();
   const alert = data.alerts.find(a => a.id === alertId);
   if (alert) {
     alert.handled = true;

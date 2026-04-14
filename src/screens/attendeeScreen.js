@@ -1,9 +1,41 @@
 // src/screens/attendeeScreen.js - Attendee UI rendering
 // Uses service layer for data, logic layer for decisions
 
-function renderAttendeeScreen() {
-  const data = window.venueService.getData();
+window.changeZone = async function(newZone) {
+  ATTENDEE_CONTEXT.currentZone = newZone;
+  await renderAttendeeScreen();
+};
+
+async function renderAttendeeScreen() {
+  const data = await window.venueService.getData();
   const ctx = ATTENDEE_CONTEXT;
+
+  // Zone Selector
+  let zoneSelectorEl = document.getElementById('zoneSelector');
+  if (!zoneSelectorEl) {
+    const gateCard = document.getElementById('gateCard');
+    if (gateCard) {
+      zoneSelectorEl = document.createElement('div');
+      zoneSelectorEl.id = 'zoneSelector';
+      gateCard.parentNode.insertBefore(zoneSelectorEl, gateCard);
+    }
+  }
+
+  if (zoneSelectorEl) {
+    const zones = ['north', 'east', 'south', 'west', 'central'];
+    zoneSelectorEl.innerHTML = `
+      <div style="margin-bottom: 8px; font-size: 0.9rem; color: #8ab4f8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: bold;">Select Your Current Zone</div>
+      <div class="mode-buttons" style="margin-bottom: 16px;">
+        ${zones.map(z => `
+          <button class="mode-btn ${ctx.currentZone === z ? 'active' : ''}" 
+                  onclick="window.changeZone('${z}')"
+                  style="text-transform: capitalize;">
+            ${z}
+          </button>
+        `).join('')}
+      </div>
+    `;
+  }
 
   // Gate recommendation
   const gate = getBestGate(ctx.currentZone, data.gates);
@@ -56,9 +88,9 @@ function renderAttendeeScreen() {
 }
 
 function selectMode(mode) {
-  // Update mode buttons
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  // Update mode buttons for the event selector specifically
+  document.querySelectorAll('.event-selector .mode-btn').forEach(b => b.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
 
   // Update mode description
   const modeData = EVENT_TYPES.find(e => e.id === mode);
