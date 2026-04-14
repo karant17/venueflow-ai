@@ -2,79 +2,64 @@
 // Service layer: fetches live data from Google Apps Script Web App
 // Falls back to mock data if the API is unavailable
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyM4Pz6U_ul0aZUKylfbLSd5fKDiYNphmfGxD8KExV9ySsBbmxgdQhjl2Gf-Eti4K6L/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXlEL_WzVsyb5OCzLvO7BlWGrAx3NR32k1CwEzQ4HdSuxK1DEAkqR0tBGbSmWn_Fgz/exec';
 
 window.venueService = (function () {
-  const cache = {};
+  let cache = null;
 
-<<<<<<< HEAD
-  // Replace with actual Google Apps Script Web App URL
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_REPLACE_WITH_YOUR_ID/exec';
-
-  async function getData() {
+  async function fetchAllRemoteData() {
+    if (cache) return cache;
     try {
-      // Add a cache buster or use no-cache to ensure fresh data
-      const response = await fetch(APPS_SCRIPT_URL + '?action=getData', { cache: 'no-store' });
-      const fetchedData = await response.json();
-      
-      store.gates = fetchedData.gates || store.gates || GATES;
-      store.zones = fetchedData.zones || store.zones || ZONES;
-      store.facilities = fetchedData.facilities || store.facilities || FACILITIES;
-      store.alerts = fetchedData.alerts || store.alerts || ALERTS;
-      store.events = fetchedData.events || store.events || EVENT_TYPES;
-      
-      return store;
-    } catch (e) {
-      console.warn("Fetch from Google Apps Script failed, falling back to mock data.", e);
-      // Fallback
-      if (!store.gates) store.gates = GATES;
-      if (!store.zones) store.zones = ZONES;
-      if (!store.facilities) store.facilities = FACILITIES;
-      if (!store.alerts) store.alerts = ALERTS;
-      if (!store.events) store.events = EVENT_TYPES;
-      return store;
-    }
-=======
-  async function fetchSheet(sheet) {
-    if (cache[sheet]) return cache[sheet];
-    try {
-      const res = await fetch(`${APPS_SCRIPT_URL}?sheet=${sheet}`);
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=getData`);
       if (!res.ok) throw new Error('Network response not ok');
       const json = await res.json();
-      cache[sheet] = json.data || json;
-      return cache[sheet];
+
+      cache = {
+        gates: json.gates || json.Gates,
+        zones: json.zones || json.Zones,
+        facilities: json.facilities || json.Facilities,
+        alerts: json.alerts || json.Alerts
+      };
+      return cache;
     } catch (e) {
-      console.warn(`[venueService] Falling back to mock for ${sheet}:`, e);
+      console.warn('[venueService] Falling back to mock data:', e);
       return null;
     }
   }
 
   async function getGates() {
-    const data = await fetchSheet('Gates');
-    return data || (window.GATES || []);
->>>>>>> 44a98751f0bcc3fe61c5c1a1d5d20b3c25173cc7
+    const data = await fetchAllRemoteData();
+    return (data && data.gates) ? data.gates : (typeof GATES !== 'undefined' ? GATES : []);
   }
 
   async function getZones() {
-    const data = await fetchSheet('Zones');
-    return data || (window.ZONES || []);
+    const data = await fetchAllRemoteData();
+    return (data && data.zones) ? data.zones : (typeof ZONES !== 'undefined' ? ZONES : []);
   }
 
   async function getFacilities() {
-    const data = await fetchSheet('Facilities');
-    return data || (window.FACILITIES || []);
+    const data = await fetchAllRemoteData();
+    return (data && data.facilities) ? data.facilities : (typeof FACILITIES !== 'undefined' ? FACILITIES : []);
   }
 
   async function getAlerts() {
-    const data = await fetchSheet('Alerts');
-    return data || (window.ALERTS || []);
+    const data = await fetchAllRemoteData();
+    return (data && data.alerts) ? data.alerts : (typeof ALERTS !== 'undefined' ? ALERTS : []);
   }
 
   async function getAllData() {
-    const [gates, zones, facilities, alerts] = await Promise.all([
-      getGates(), getZones(), getFacilities(), getAlerts()
-    ]);
-    return { gates, zones, facilities, alerts };
+    return {
+      gates: await getGates(),
+      zones: await getZones(),
+      facilities: await getFacilities(),
+      alerts: await getAlerts(),
+      events: typeof EVENT_TYPES !== 'undefined' ? EVENT_TYPES : []
+    };
+  }
+
+  // Alias getAllData to getData to maintain compatibility with attendeeScreen.js and opsScreen.js
+  async function getData() {
+    return await getAllData();
   }
 
   async function postAlert(alertData) {
@@ -90,5 +75,5 @@ window.venueService = (function () {
     }
   }
 
-  return { getGates, getZones, getFacilities, getAlerts, getAllData, postAlert };
+  return { getGates, getZones, getFacilities, getAlerts, getAllData, getData, postAlert };
 })();
