@@ -48,6 +48,13 @@ window.venueService = (function () {
   }
 
   async function getAllData() {
+    // 1. Check if LocalStorage overrides exist
+    const local = localStorage.getItem('venueData');
+    if (local) {
+      return JSON.parse(local);
+    }
+
+    // 2. Fallback to API / Mock Data
     return {
       gates: await getGates(),
       zones: await getZones(),
@@ -55,6 +62,36 @@ window.venueService = (function () {
       alerts: await getAlerts(),
       events: typeof EVENT_TYPES !== 'undefined' ? EVENT_TYPES : []
     };
+  }
+
+  async function saveData(newData) {
+    localStorage.setItem('venueData', JSON.stringify(newData));
+    cache = null; // force clear to avoid stale data 
+  }
+
+  async function updateGate(gateId, queueTime, status) {
+    const data = await getAllData();
+    const idx = data.gates.findIndex(g => g.id === gateId);
+    if (idx > -1) {
+      data.gates[idx].queueTime = parseInt(queueTime, 10);
+      data.gates[idx].status = status;
+      await saveData(data);
+    }
+  }
+
+  async function updateFacility(facId, queueTime, available) {
+    const data = await getAllData();
+    const idx = data.facilities.findIndex(f => f.id === facId);
+    if (idx > -1) {
+      data.facilities[idx].queueTime = parseInt(queueTime, 10);
+      data.facilities[idx].available = available;
+      await saveData(data);
+    }
+  }
+
+  async function resetData() {
+    localStorage.removeItem('venueData');
+    cache = null;
   }
 
   // Alias getAllData to getData to maintain compatibility with attendeeScreen.js and opsScreen.js
@@ -75,5 +112,16 @@ window.venueService = (function () {
     }
   }
 
-  return { getGates, getZones, getFacilities, getAlerts, getAllData, getData, postAlert };
+  return { 
+    getGates, 
+    getZones, 
+    getFacilities, 
+    getAlerts, 
+    getAllData, 
+    getData, 
+    postAlert,
+    updateGate,
+    updateFacility,
+    resetData 
+  };
 })();

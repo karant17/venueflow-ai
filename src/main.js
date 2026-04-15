@@ -8,14 +8,17 @@ async function switchRole(role) {
   // Toggle views
   document.getElementById('attendeeView').classList.toggle('active', role === 'attendee');
   document.getElementById('opsView').classList.toggle('active', role === 'ops');
+  document.getElementById('adminView').classList.toggle('active', role === 'admin');
 
   // Toggle header buttons
   document.getElementById('btnAttendee').classList.toggle('active', role === 'attendee');
   document.getElementById('btnOps').classList.toggle('active', role === 'ops');
+  document.getElementById('btnAdmin').classList.toggle('active', role === 'admin');
 
   // Render the correct screen
   if (role === 'attendee') await renderAttendeeScreen();
   if (role === 'ops') await renderOpsScreen();
+  if (role === 'admin') await renderAdminScreen();
 }
 
 // Initialise app on DOM ready
