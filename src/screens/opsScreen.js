@@ -1,4 +1,4 @@
-// src/screens/opsScreen.js - Operations Console UI rendering
+// src/screens/opsScreen.js - Unified Operations & Admin Console
 
 window.changeOpsMode = async function(mode) {
   window.currentOpsMode = mode;
@@ -7,37 +7,27 @@ window.changeOpsMode = async function(mode) {
 
 async function renderOpsScreen() {
   const data = await window.venueService.getData();
-  
   if (!window.currentOpsMode) window.currentOpsMode = 'sports';
 
-  // Mode Switcher
-  let opsModeSelector = document.getElementById('opsModeSelector');
-  if (!opsModeSelector) {
-    const overviewSection = document.getElementById('overviewCards').parentNode;
-    if (overviewSection) {
-      opsModeSelector = document.createElement('div');
-      opsModeSelector.id = 'opsModeSelector';
-      overviewSection.insertBefore(opsModeSelector, document.getElementById('overviewCards'));
-    }
-  }
+  const isSimulated = true; // Use for demo badges
 
+  // 1. Render Mode Switcher in the Header
+  const opsModeSelector = document.getElementById('opsModeSelectorWrapper');
   if (opsModeSelector) {
     const modes = ['sports', 'concert', 'expo'];
     opsModeSelector.innerHTML = `
-      <div style="margin-bottom: 8px; font-size: 0.9rem; color: #8ab4f8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: bold;">Threshold Mode</div>
-      <div class="mode-buttons" style="margin-bottom: 16px;">
+      <div class="segmented-tabs inline-tabs">
         ${modes.map(m => `
-          <button class="mode-btn ${window.currentOpsMode === m ? 'active' : ''}" 
-                  onclick="window.changeOpsMode('${m}')"
-                  style="text-transform: capitalize;">
-            ${m}
+          <button class="tab-btn ${window.currentOpsMode === m ? 'active' : ''}" 
+                  onclick="window.changeOpsMode('${m}')">
+            ${m} Mode Thresholds
           </button>
         `).join('')}
       </div>
     `;
   }
 
-  // Overview Dashboard
+  // 2. Render Overview KPIs
   const overviewEl = document.getElementById('overviewCards');
   if (overviewEl) {
     const openGates = data.gates.filter(g => g.status === 'open').length;
@@ -47,95 +37,182 @@ async function renderOpsScreen() {
     const highZones = data.zones.filter(z => z.congestion === 'high').length;
 
     overviewEl.innerHTML = `
-      <div class="card"><div class="card-title">Total Gates</div><div style="font-size:1.8rem;font-weight:700">${data.gates.length}</div>
-        <span class="badge badge-green">${openGates} Open</span>
-        <span class="badge badge-yellow" style="margin-left:6px">${busyGates} Busy</span>
-        <span class="badge badge-red" style="margin-left:6px">${closedGates} Closed</span></div>
-      <div class="card"><div class="card-title">Active Alerts</div><div style="font-size:1.8rem;font-weight:700;color:${activeAlerts > 0 ? '#ef5350' : '#4caf80'}">${activeAlerts}</div>
-        <span class="badge ${activeAlerts > 0 ? 'badge-red' : 'badge-green'}">${activeAlerts > 0 ? 'Requires Attention' : 'All Clear'}</span></div>
-      <div class="card"><div class="card-title">High Congestion Zones</div><div style="font-size:1.8rem;font-weight:700;color:${highZones > 0 ? '#ffc107' : '#4caf80'}">${highZones}</div>
-        <span class="badge ${highZones > 0 ? 'badge-yellow' : 'badge-green'}">${highZones > 0 ? 'Monitor Now' : 'Normal'}</span></div>
-      <div class="card"><div class="card-title">Total Facilities</div><div style="font-size:1.8rem;font-weight:700">${data.facilities.length}</div>
-        <span class="badge badge-blue">${data.facilities.filter(f=>f.available).length} Available</span></div>
+      <div class="card kpi-card">
+        <div class="kpi-title">Total Gates</div>
+        <div class="kpi-value">${data.gates.length}</div>
+        <div class="kpi-subtext">
+          <span class="color-green">${openGates} Open</span> &bull; 
+          <span class="color-yellow">${busyGates} Busy</span> &bull; 
+          <span class="color-red">${closedGates} Closed</span>
+        </div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-title">Active AI Alerts</div>
+        <div class="kpi-value ${activeAlerts > 0 ? 'color-red' : 'color-green'}">${activeAlerts}</div>
+        <div class="kpi-subtext">${activeAlerts > 0 ? 'Requires Immediate Action' : 'All Clear'}</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-title">High Congestion Zones</div>
+        <div class="kpi-value ${highZones > 0 ? 'color-yellow' : 'color-green'}">${highZones}</div>
+        <div class="kpi-subtext">${highZones > 0 ? 'Manual route diversion recommended' : 'Flow is optimal'}</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-title">Facilities Online</div>
+        <div class="kpi-value">${data.facilities.filter(f=>f.available).length} <span style="font-size:1rem;color:#888;">/ ${data.facilities.length}</span></div>
+        <div class="kpi-subtext">All essential services operational</div>
+      </div>
     `;
   }
 
-  // Zone Congestion
+  // 3. Zone Congestion Map
   const zoneEl = document.getElementById('zoneCards');
   if (zoneEl) {
     zoneEl.innerHTML = data.zones.map(z => {
       const badgeClass = z.congestion === 'high' ? 'badge-red' : z.congestion === 'medium' ? 'badge-yellow' : 'badge-green';
-      const trendIcon = z.trend === 'rising' ? '↗️' : z.trend === 'falling' ? '↘️' : '➡️';
+      const trendIcon = z.trend === 'rising' ? '↗' : z.trend === 'falling' ? '↘' : '→';
       return `
-        <div class="card">
-          <div class="card-title">${z.label}</div>
-          <div>Crowd: <strong>${z.crowdCount.toLocaleString()}</strong></div>
-          <div>Trend: ${trendIcon} ${z.trend}</div>
-          <span class="badge ${badgeClass}">${z.congestion.toUpperCase()}</span>
+        <div class="card list-card">
+          <div class="list-card-left">
+            <div class="card-title">${z.label}</div>
+            <div class="reason-text">Vol: <span style="color:#fff;">${z.crowdCount.toLocaleString()}</span> &nbsp;|&nbsp; Trend: <span style="color:#fff;">${trendIcon} ${z.trend}</span></div>
+          </div>
+          <div class="list-card-right">
+            <span class="badge ${badgeClass}">${z.congestion.toUpperCase()}</span>
+          </div>
         </div>`;
     }).join('');
   }
 
-  // Queue Status Board
+  // 4. Live Queue Board
   const queueEl = document.getElementById('queueCards');
   if (queueEl) {
-    // Determine thresholds based on mode
-    let redThreshold = 15;
-    let yellowThreshold = 7;
-    if (window.currentOpsMode === 'sports') {
-      redThreshold = 20; // Sports events tolerate higher wait times before alerting
-      yellowThreshold = 10;
-    } else if (window.currentOpsMode === 'expo') {
-      redThreshold = 10; // Expos need faster throughput
-      yellowThreshold = 5;
-    }
+    let redThreshold = window.currentOpsMode === 'sports' ? 20 : (window.currentOpsMode === 'expo' ? 10 : 15);
+    let yellowThreshold = window.currentOpsMode === 'sports' ? 10 : (window.currentOpsMode === 'expo' ? 5 : 7);
 
     const sorted = [...data.gates].sort((a,b) => b.queueTime - a.queueTime);
     queueEl.innerHTML = sorted.map((g, i) => {
-      const badgeClass = g.queueTime >= redThreshold ? 'badge-red' : g.queueTime >= yellowThreshold ? 'badge-yellow' : 'badge-green';
-      const topBadge = i < 3 && g.queueTime > 0 ? '<span class="badge badge-red" style="margin-right:4px">TOP CONGESTED</span>' : '';
+      const isCritical = g.queueTime >= redThreshold;
+      const isWarning = g.queueTime >= yellowThreshold;
+      const badgeClass = g.status === 'closed' ? 'badge-red' : (isCritical ? 'badge-red' : isWarning ? 'badge-yellow' : 'badge-green');
+      
       return `
-        <div class="card">
-          <div class="card-title">${g.label}</div>
-          ${topBadge}
-          <div>Wait: <strong>${g.queueTime} min</strong></div>
-          <span class="badge ${badgeClass}">${g.status.toUpperCase()}</span>
+        <div class="card queue-card ${isCritical ? 'queue-critical' : ''}">
+          <div class="queue-left">
+            <div class="queue-rank">#${i+1}</div>
+            <div class="card-title" style="margin:0;">${g.label}</div>
+          </div>
+          <div class="queue-right">
+            <div class="queue-time">${g.queueTime} <span>min</span></div>
+            <span class="badge ${badgeClass}" style="width:60px; text-align:center;">${g.status.toUpperCase()}</span>
+          </div>
         </div>`;
     }).join('');
   }
 
-  // Ops Alert Panel
-  const opsRec = getOpsRecommendation(data.zones, data.gates);
+  // 5. Ops Alerts
   const opsAlertEl = document.getElementById('opsAlertCards');
   if (opsAlertEl) {
-    opsAlertEl.innerHTML = `
-      <div class="card" style="border-color:${opsRec.severity === 'high' ? '#ef5350' : '#ffc107'}">
-        <div class="card-title">AI Recommendation</div>
-        <div><strong>Action:</strong> ${opsRec.action}</div>
-        <div class="reason-text">${opsRec.reason}</div>
-        <span class="badge ${opsRec.severity === 'high' ? 'badge-red' : 'badge-yellow'}">${opsRec.severity.toUpperCase()} PRIORITY</span>
+    const activeAlerts = data.alerts.filter(a => !a.handled);
+    
+    if (activeAlerts.length === 0) {
+      opsAlertEl.innerHTML = `
+        <div class="empty-state" style="padding: 20px;">
+          <div class="card-title">No Active Alerts</div>
+        </div>
+      `;
+    } else {
+      opsAlertEl.innerHTML = activeAlerts.map(a => {
+        const sevClass = a.severity === 'high' ? 'alert-critical' : a.severity === 'medium' ? 'alert-warning' : 'alert-info';
+        return `
+          <div class="card alert-card ${sevClass}">
+            <div class="alert-header">
+              <span class="badge badge-outline">${a.severity.toUpperCase()}</span>
+              <span>SYSTEM EVENT</span>
+            </div>
+            <div class="card-title" style="margin-top:8px;">${a.message}</div>
+            <div class="reason-text" style="color:#e0e0e0; margin-bottom:12px;">➔ Advice: ${a.routeAdvice}</div>
+            <button class="action-btn" onclick="handleAlert('${a.id}')">Acknowledge & Resolve</button>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  // 6. Local Overrides Console (Merged from adminScreen)
+  const gatesConsole = document.getElementById('adminGatesCards');
+  if (gatesConsole) {
+    gatesConsole.innerHTML = data.gates.map(g => `
+      <div class="card console-card">
+        <div class="card-title" style="margin-bottom:12px;">${g.label}</div>
+        <div class="console-row">
+          <label>Wait Time:</label>
+          <input type="number" id="override-gate-time-${g.id}" value="${g.queueTime}" class="console-input" />
+        </div>
+        <div class="console-row">
+          <label>Status:</label>
+          <select id="override-gate-status-${g.id}" class="console-input">
+            <option value="open" ${g.status === 'open' ? 'selected' : ''}>Open</option>
+            <option value="busy" ${g.status === 'busy' ? 'selected' : ''}>Busy</option>
+            <option value="closed" ${g.status === 'closed' ? 'selected' : ''}>Closed</option>
+          </select>
+        </div>
+        <button class="action-btn solid-btn" onclick="saveGateAdmin('${g.id}')">Apply</button>
       </div>
-    ` + data.alerts.map(a => {
-      const sevClass = a.severity === 'high' ? 'badge-red' : a.severity === 'medium' ? 'badge-yellow' : 'badge-green';
-      return `
-        <div class="card" id="alert-${a.id}">
-          <div class="card-title">${a.message}</div>
-          <span class="badge ${sevClass}">${a.severity.toUpperCase()}</span>
-          <div class="reason-text">${a.routeAdvice}</div>
-          <button class="action-btn ${a.handled ? 'handled' : ''}" onclick="handleAlert('${a.id}')" ${a.handled ? 'disabled' : ''}>
-            ${a.handled ? 'Handled' : 'Mark as Handled'}
-          </button>
-        </div>`;
-    }).join('');
+    `).join('');
+  }
+
+  const facConsole = document.getElementById('adminFacCards');
+  if (facConsole) {
+    facConsole.innerHTML = data.facilities.map(f => `
+      <div class="card console-card">
+        <div class="card-title" style="margin-bottom:12px;">${f.label}</div>
+        <div class="console-row">
+          <label>Wait Time:</label>
+          <input type="number" id="override-fac-time-${f.id}" value="${f.queueTime}" class="console-input" />
+        </div>
+        <div class="console-row">
+          <label>Availability:</label>
+          <select id="override-fac-avail-${f.id}" class="console-input">
+            <option value="true" ${f.available ? 'selected' : ''}>Online</option>
+            <option value="false" ${!f.available ? 'selected' : ''}>Offline</option>
+          </select>
+        </div>
+        <button class="action-btn solid-btn" onclick="saveFacilityAdmin('${f.id}')">Apply</button>
+      </div>
+    `).join('');
   }
 }
 
-async function handleAlert(alertId) {
+// Ops Alert Handlers
+window.handleAlert = async function(alertId) {
   const data = await window.venueService.getData();
   const alert = data.alerts.find(a => a.id === alertId);
   if (alert) {
     alert.handled = true;
-    const btn = document.querySelector(`#alert-${alertId} .action-btn`);
-    if (btn) { btn.textContent = 'Handled'; btn.classList.add('handled'); btn.disabled = true; }
+    await window.venueService.saveData(data); // Sync local override so it stays acknowledged
+    await renderOpsScreen();
   }
 }
+
+// Unified Admin Overrides Triggers
+window.saveGateAdmin = async function(gateId) {
+  const timeInput = document.getElementById(`override-gate-time-${gateId}`).value;
+  const statusInput = document.getElementById(`override-gate-status-${gateId}`).value;
+  
+  await window.venueService.updateGate(gateId, timeInput, statusInput);
+  await renderOpsScreen(); // instant visual refresh
+};
+
+window.saveFacilityAdmin = async function(facId) {
+  const timeInput = document.getElementById(`override-fac-time-${facId}`).value;
+  const availInput = document.getElementById(`override-fac-avail-${facId}`).value === 'true';
+  
+  await window.venueService.updateFacility(facId, timeInput, availInput);
+  await renderOpsScreen(); // instant visual refresh
+};
+
+window.resetAdminData = async function() {
+  if (confirm("Are you sure you want to clear all offline overrides and sync back to defaults?")) {
+    await window.venueService.resetData();
+    await renderOpsScreen();
+  }
+};
