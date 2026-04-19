@@ -42,7 +42,7 @@ async function renderAttendeeScreen() {
         <div class="hero-right">
           <div class="hero-time">${gate.queueTime} <span style="font-size:1rem; font-weight:normal; color:#888;">min</span></div>
           ${badgeHtml}
-          <button class="action-btn solid-btn" style="margin-top:12px; width:100%;">Route Me</button>
+          <button class="action-btn solid-btn" style="margin-top:12px; width:100%;" onclick="alert('Routing activated! Opening map directions to ${gate.label}...')">Route Me</button>
         </div>
       </div>
     `;
