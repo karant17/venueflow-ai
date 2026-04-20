@@ -451,3 +451,16 @@ body {
 .vsi-detail strong {
   color: #fff;
 }
+
+.st-alert-pulse {
+  fill: rgba(255, 23, 68, 0.2);
+  stroke: rgba(255, 23, 68, 0.8);
+  stroke-width: 3;
+  pointer-events: none;
+  animation: alertPulse 2s infinite ease-in-out;
+}
+@keyframes alertPulse {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}

@@ -107,7 +107,11 @@ window.vsRouteToRecommended = function() {
  * Renders the SVG Map based on current layout and data
  */
 function renderSvgMap() {
-  const { currentZone, gates, zones, facilities, recommendedGate } = vsState.data;
+  const { currentZone, gates, zones, facilities, recommendedGate, alerts } = vsState.data;
+
+  // Determine affected zones based on active alerts
+  const unhandledAlerts = alerts ? alerts.filter(a => !a.handled) : [];
+  const alertZones = unhandledAlerts.map(a => a.zone);
   
   // Base coordinates mapping for the visualization
   const positions = {
@@ -225,8 +229,11 @@ function renderSvgMap() {
     const pos = positions.gates[g.id];
     if (!pos) return '';
     
-    // Status visual
-    const statusClass = g.status === 'open' ? 'gate-open' : (g.status === 'busy' ? 'gate-busy' : 'gate-closed');
+    // Status visual bound to live queue times
+    let statusClass = 'gate-closed';
+    if (g.status !== 'closed') {
+      statusClass = g.queueTime >= 15 ? 'gate-busy' : 'gate-open';
+    }
     const isSelected = vsState.selectedElement && vsState.selectedElement.id === g.id;
     const isRecommended = recommendedGate && recommendedGate.gateId === g.id;
     
@@ -262,12 +269,15 @@ function renderSvgMap() {
       ${Object.keys(positions.zones).map(zId => {
         const isSelected = vsState.selectedElement && vsState.selectedElement.id === zId;
         const isUserZone = currentZone === zId;
+        const isAlertAffected = alertZones.includes(zId);
+        
         return `
           <path 
             d="${positions.zones[zId].path}" 
             class="st-stand ${isSelected ? 'active' : ''}" 
             onclick="window.vsSelectElement('zone', '${zId}')"
           />
+          ${isAlertAffected ? `<path d="${positions.zones[zId].path}" class="st-alert-pulse" />` : ''}
           <text x="${positions.zones[zId].cx}" y="${positions.zones[zId].cy}" class="st-text">${zId.toUpperCase()}</text>
           ${isUserZone ? `<text x="${positions.zones[zId].cx}" y="${positions.zones[zId].cy + 16}" style="fill: var(--accent-light); font-size: 10px; font-weight: bold; text-anchor: middle;">YOU ARE HERE</text>` : ''}
         `;
