@@ -107,6 +107,18 @@ async function renderAttendeeScreen() {
       `).join('');
     }
   }
+
+  // 5. Render Interactive Virtual Stadium & Ground
+  if (typeof window.renderVirtualVenue === 'function') {
+    window.renderVirtualVenue({
+      currentZone: ctx.currentZone,
+      gates: data.gates,
+      zones: data.zones,
+      facilities: data.facilities,
+      alerts: data.alerts,
+      recommendedGate: gate
+    });
+  }
 }
 
 // Global mode selector (moved to Ops logic in opsScreen for Admin view, but kept here for fallback)

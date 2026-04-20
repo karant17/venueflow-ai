@@ -252,3 +252,202 @@ body {
 
 /* Utilities */
 .inline-tabs { margin-bottom: 0; }
+
+/* Virtual Stadium UI */
+.virtual-stadium-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.virtual-stadium-controls {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vs-control-group {
+  display: flex;
+  gap: 8px;
+}
+
+.vs-btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vs-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.virtual-stadium-layout {
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 900px) {
+  .virtual-stadium-layout {
+    flex-direction: row;
+  }
+}
+
+.virtual-stadium-map-container {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+}
+@media (min-width: 900px) {
+  .virtual-stadium-map-container {
+    border-bottom: none;
+    border-right: 1px solid var(--border-subtle);
+  }
+}
+
+.stadium-svg {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  display: block;
+}
+
+.st-bowl { fill: none; stroke: var(--border-subtle); stroke-width: 8; }
+.st-stand { 
+  fill: var(--bg-dark); 
+  stroke: var(--border-subtle); 
+  stroke-width: 2; 
+  cursor: pointer; 
+  transition: fill 0.3s, stroke 0.3s;
+}
+.st-stand:hover { fill: rgba(92, 147, 250, 0.2); stroke: var(--accent-light); }
+.st-stand.active { fill: rgba(45, 108, 223, 0.4); stroke: var(--accent); }
+.st-field { fill: #10141a; stroke: var(--border-subtle); stroke-width: 2; }
+.st-pitch { fill: none; stroke: rgba(255, 255, 255, 0.3); stroke-width: 1.5; }
+.st-stage { fill: var(--bg-panel); stroke: var(--accent-light); stroke-width: 2; }
+.st-text { fill: var(--text-muted); font-size: 14px; font-weight: bold; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+
+.st-gate {
+  cursor: pointer;
+  stroke: #fff;
+  stroke-width: 2;
+  transition: r 0.2s;
+}
+.st-gate:hover { r: 12; }
+.st-gate.gate-open { fill: var(--color-green); }
+.st-gate.gate-busy { fill: var(--color-yellow); }
+.st-gate.gate-closed { fill: var(--color-red); opacity: 0.5; stroke: rgba(255,255,255,0.2); }
+.st-gate.active { stroke: var(--accent-light); stroke-width: 4; }
+
+.st-facility {
+  fill: var(--bg-dark);
+  stroke: #fff;
+  stroke-width: 1.5;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.st-facility:hover { transform: scale(1.1); }
+.st-facility.active { stroke: var(--accent-light); stroke-width: 2.5; }
+
+.st-fac-icon { font-size: 12px; pointer-events: none; text-anchor: middle; dominant-baseline: middle; }
+
+.st-route {
+  fill: none;
+  stroke: var(--accent-light);
+  stroke-width: 3;
+  stroke-dasharray: 8 4;
+  animation: dash 15s linear infinite;
+  pointer-events: none;
+  opacity: 0.8;
+}
+@keyframes dash {
+  to { stroke-dashoffset: -1000; }
+}
+
+.st-user {
+  fill: var(--accent);
+  stroke: #fff;
+  stroke-width: 2;
+  pointer-events: none;
+}
+.st-user-pulse {
+  fill: var(--accent);
+  opacity: 0.4;
+  animation: st-pulse 2s infinite;
+  pointer-events: none;
+}
+@keyframes st-pulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+.st-heatmap {
+  fill: var(--color-red);
+  opacity: 0; 
+  pointer-events: none;
+  transition: opacity 0.5s;
+  filter: blur(8px);
+}
+
+.virtual-stadium-info {
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-panel);
+}
+@media (min-width: 900px) {
+  .virtual-stadium-info {
+    width: 300px;
+  }
+}
+
+.vsi-header {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.vsi-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.vsi-title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vsi-detail {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.vsi-detail strong {
+  color: #fff;
+}
