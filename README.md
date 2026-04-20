@@ -1,84 +1,110 @@
 # VenueFlow AI
 
-**Dual-Interface Venue Experience Intelligence Platform**
+VenueFlow AI is a concept prototype for **smart venue operations and attendee wayfinding**.
 
-VenueFlow AI guides attendees in real-time and helps operations teams monitor congestion, queues, and alerts — all in one lightweight, web-first application.
+Live Demo: https://karant17.github.io/venueflow-ai/
 
----
+## Overview
 
-## What It Does
+VenueFlow AI is designed to help large venues such as stadiums, concert arenas, and event grounds improve both **attendee navigation** and **operations visibility**.
 
-| Role | What They See |
-|---|---|
-| **Attendee** | Best gate recommendation, nearby facilities with wait times, live alerts & route guidance |
-| **Operations** | Zone congestion map, queue status board, AI action recommendations, alert management |
+The demo includes:
+- AI-based gate recommendation
+- Interactive virtual stadium / ground section
+- Live alerts and route guidance
+- Nearby facilities discovery
+- Admin-facing operational visibility
 
-The app supports three event modes: **Sports**, **Concert**, and **Expo**.
+This project explores how real-time venue data can be turned into a more intuitive and actionable interface for both visitors and venue teams. Modern venue wayfinding systems improve navigation, reduce congestion, and help attendees find entrances, exits, restrooms, concessions, and seats more efficiently. [web:2][web:6]
 
----
+## Why this project
 
-## How To Run
+Large venues are complex environments. Visitors often face common problems such as:
+- Choosing the wrong gate
+- Walking into crowded zones
+- Difficulty finding food, restrooms, or exits
+- Delays caused by static signage and limited real-time guidance
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/karant17/venueflow-ai.git
-   cd venueflow-ai
-   ```
-2. Open `index.html` directly in your browser — no build step, no server needed.
-3. Use the **Attendee / Operations** toggle at the top to switch roles.
-4. Use the **Sports / Concert / Expo** buttons to switch event mode.
+Interactive maps and dynamic routing can improve fan experience, reduce bottlenecks, and make venue navigation more efficient. [web:5][web:17][web:29]
 
----
+VenueFlow AI was built as a prototype to imagine a smarter venue layer where:
+- attendees get faster entry and better route suggestions
+- operators get better visibility into congestion and alerts
+- the venue experience becomes more proactive instead of reactive
 
-## Project Structure
+## Core Features
 
-```
-/src
-  /components    - styles.css (global responsive stylesheet)
-  /data          - mock data: gates, zones, facilities, alerts, events
-  /logic         - recommendationLogic.js (pure AI decision functions)
-  /screens       - attendeeScreen.js, opsScreen.js (UI rendering)
-  /services      - venueService.js (data access layer, ready for Sheets integration)
-  /utils         - helpers.js (formatting and display helpers)
-  main.js        - app entry point, role switching
-index.html       - single page app shell
-```
+### Attendee View
+- AI gate recommendation based on zone and queue conditions
+- Virtual stadium / ground section for visual orientation
+- Live alerts with route suggestions
+- Nearby facilities panel for washrooms, food, merch, and other services
 
----
+### Admin View
+- Venue operations visibility
+- Zone congestion monitoring
+- Queue board
+- Local operations console for venue controls
 
-## AI Logic (Explainable Decisions)
+## Virtual Stadium Layer
 
-All decisions return a `reason` field so every recommendation is transparent:
+One of the key ideas in this prototype is the **virtual stadium and ground experience**.
 
-| Function | What It Does |
-|---|---|
-| `getBestGate(zone, gates)` | Finds nearest open gate with shortest queue |
-| `getBestFacility(zone, facilities)` | Finds closest washroom, food, merch by zone |
-| `getAttendeeAlert(mode, zones, alerts)` | Returns highest-priority unhandled alert |
-| `getOpsRecommendation(zones, gates)` | Flags critical zones and suggests crowd redirection |
+Instead of relying only on lists and cards, the interface introduces a spatial layer where users can understand:
+- where they are
+- which gate is recommended
+- which zones are crowded
+- how to move toward facilities or entry points
 
----
+Digital twin and interactive venue mapping approaches are increasingly used in event management to simulate layouts, test crowd flow, and improve live venue decisions. [web:11][web:37]
 
-## Google Integration (Future)
+## Use Cases
 
-The `venueService.js` file is pre-wired for Google Sheets + Apps Script. To connect real data:
+VenueFlow AI can be extended for:
+- stadiums and sports events
+- concerts and music festivals
+- exhibition centers
+- convention venues
+- large campus events
+- smart event operations dashboards
 
-1. Create a Google Sheet with tabs: Gates, Zones, Facilities, Alerts.
-2. Deploy a Google Apps Script as a Web App that returns JSON.
-3. Replace the `getData()` function in `venueService.js` with a `fetch()` call to your Apps Script URL.
+## Product Vision
 
----
+The long-term vision for VenueFlow AI is to become a lightweight **venue intelligence and wayfinding platform** that combines:
+- live crowd flow awareness
+- gate and facility intelligence
+- route recommendations
+- operational alerts
+- digital twin style venue visualization
 
-## Tech Stack
+Dedicated indoor maps and navigation layers are increasingly important in modern venues because GPS alone is often not enough indoors, and map-based navigation improves navigability, accessibility, and discoverability. [web:2]
 
-- Pure HTML / CSS / JavaScript — no frameworks, no build tools
-- Responsive and mobile-ready (PWA-friendly layout)
-- Modular layered architecture: UI → Logic → Service → Data
-- Under 1 MB total (submission-safe)
-- Single branch: `main`
+## Tech Direction
 
----
+This prototype focuses on a web-first experience and can evolve further with:
+- real-time sensor or queue integrations
+- ticket-linked seat and gate navigation
+- accessibility routing
+- event-specific layouts for concerts, sports, and exhibitions
+- predictive congestion alerts
+- richer digital twin visualization
 
-## License
+## Demo Link
 
-MIT — see [LICENSE](LICENSE)
+https://karant17.github.io/venueflow-ai/
+
+## Author
+
+Built by Karan as an exploration into AI-assisted venue operations, wayfinding, and virtual venue experience design.
+
+## Feedback
+
+If you work in:
+- venue operations
+- stadium technology
+- event management
+- fan experience
+- digital twins
+- smart facility systems
+
+I’d love to hear your feedback and ideas for improvement.
